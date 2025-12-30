@@ -1,16 +1,27 @@
-# agri_auction_house
+# Agri Auction House
 
-A new Flutter project.
+A Flutter + Firebase based online agricultural commodity auction platform.
 
-## Getting Started
+This is my Final year project , An Mobile application called "Agri-Auction-House".
+This project was developed using Flutter and Firebase as its Database.
+This is an online auction platform for agriculture products mostly Spices like cardamom and pepper etc...
+This platform ensures Price transparency and a wide online-market for the producer's products.
+This platform is equipped with KYC (Know Your Customer) registration to avoid any possible scams and fraudulent activities.
 
-This project is a starting point for a Flutter application.
+## Features
+- User registration & login
+- KYC verification
+- Live auctions with countdown timer
+- Bidding system
+- Order & delivery tracking
+- Admin dashboard
 
-A few resources to get you started if this is your first Flutter project:
+## Tech Stack
+- Flutter
+- Firebase Auth
+- Cloud Firestore
+- Firebase Storage
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How to Run
+flutter pub get  
+flutter run
