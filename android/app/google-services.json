@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "405114655528",
+    "project_id": "agri-auction-house",
+    "storage_bucket": "agri-auction-house.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405114655528:android:37e5f79d8c2168c851761d",
+        "android_client_info": {
+          "package_name": "com.example.agri_auction_house"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgL8sGQiyAx6BHmqKttMBoiDERxLpOVAE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
