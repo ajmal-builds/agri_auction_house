@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> registerUser({
     required String name,
@@ -11,20 +11,16 @@ class AuthService {
     required String phone,
     required String password,
   }) async {
-    // Create user in Firebase Auth
-    UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
+    final cred = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    String uid = userCredential.user!.uid;
-
-    // Save user in Firestore
-    await _firestore.collection('users').doc(uid).set({
+    await _db.collection('users').doc(cred.user!.uid).set({
       'name': name,
       'email': email,
       'phone': phone,
+      'role': 'user',
       'kycStatus': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
     });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../services/order_service.dart';
+import 'admin_verify_auction_page.dart';
 
 class AdminAuctionPage extends StatelessWidget {
   const AdminAuctionPage({super.key});
@@ -8,41 +8,52 @@ class AdminAuctionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Admin: Auctions")),
+      appBar: AppBar(title: const Text("Verify Auctions")),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('auctions').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('auctions')
+            .where('status', isEqualTo: 'pending')
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return ListView(
-            children: snapshot.data!.docs.map((doc) {
+          final auctions = snapshot.data!.docs;
+
+          if (auctions.isEmpty) {
+            return const Center(child: Text("No pending auctions"));
+          }
+
+          return ListView.builder(
+            itemCount: auctions.length,
+            itemBuilder: (context, index) {
+              final doc = auctions[index];
               final data = doc.data() as Map<String, dynamic>;
 
               return Card(
-                margin: const EdgeInsets.all(10),
+                margin: const EdgeInsets.all(12),
                 child: ListTile(
-                  title: Text(data['commodity']),
-                  subtitle: Text("Status: ${data['status']}"),
+                  title: Text(data['commodityName'] ?? 'Unknown'),
+                  subtitle:
+                      Text("Base Price: ₹${data['basePrice'] ?? 0}"),
                   trailing: ElevatedButton(
-                    onPressed: data['status'] == 'ended'
-                        ? null
-                        : () async {
-                            await OrderService()
-                                .createOrderFromAuction(doc.id);
-
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Auction closed & order created"),
-                              ),
-                            );
-                          },
-                    child: const Text("Close Auction"),
+                    child: const Text("Verify"),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AdminVerifyAuctionPage(
+                            auctionId: doc.id,
+                            auctionData: data,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
-            }).toList(),
+            },
           );
         },
       ),

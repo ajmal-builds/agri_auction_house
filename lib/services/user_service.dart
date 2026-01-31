@@ -2,14 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class UserService {
-  Future<String> getKycStatus() async {
-    final uid = FirebaseAuth.instance.currentUser!.uid;
+  final _db = FirebaseFirestore.instance;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+  Future<Map<String, dynamic>?> getCurrentUserData() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return null;
 
-    return doc['kycStatus'] ?? 'pending';
+    final doc = await _db.collection('users').doc(uid).get();
+    return doc.data();
+  }
+
+  Future<String> getUserRole() async {
+    final data = await getCurrentUserData();
+    return data?['role'] ?? 'user';
   }
 }
