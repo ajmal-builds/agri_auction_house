@@ -14,36 +14,27 @@ class _LoginPageState extends State<LoginPage> {
   final passwordController = TextEditingController();
 
   Future<void> loginUser() async {
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()),
-      );
-
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-
-      if (!mounted) return;
-      Navigator.pop(context); // close loader
-
-      // RoleRouter will auto-redirect
-    } catch (e) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+  try {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+    // ✅ DO NOTHING ELSE
+    // RoleRouter will auto-react
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       appBar: AppBar(title: const Text("Login")),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -72,6 +63,29 @@ class _LoginPageState extends State<LoginPage> {
               },
               child: const Text("New user? Register"),
             ),
+            Center(
+  child: Card(
+    margin: const EdgeInsets.all(20),
+    child: Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.agriculture, size: 48, color: Color(0xFF2E7D32)),
+          const SizedBox(height: 10),
+          const Text(
+            "Agri Auction House",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+
+          // TextFields here
+        ],
+      ),
+    ),
+  ),
+)
+
           ],
         ),
       ),

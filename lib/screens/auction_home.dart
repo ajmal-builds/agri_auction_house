@@ -150,13 +150,16 @@ final uid = user.uid;
                       return Card(
                         margin: const EdgeInsets.all(10),
                         child: ListTile(
-                          title: Text(auction['commodity']),
+                          title: Text(
+                          auction['commodityName'] ?? 'Unknown Commodity',),
                           subtitle: Column(
                             crossAxisAlignment:
                                 CrossAxisAlignment.start,
                             children: [
                               Text(
-                                  "Base Price: ₹${auction['basePrice']}"),
+                                "Current Bid: ₹${auction['highestBid'] ?? auction['basePrice'] ?? 0}",
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               AuctionTimer(
                                 endTime: (auction['endTime']
                                         as Timestamp)

@@ -14,7 +14,7 @@ class RoleRouter extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, authSnapshot) {
-        // 🔄 Waiting for auth state
+        // 🔄 Waiting for auth
         if (authSnapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -22,13 +22,13 @@ class RoleRouter extends StatelessWidget {
         }
 
         // ❌ Not logged in
-        if (!authSnapshot.hasData || authSnapshot.data == null) {
+        if (!authSnapshot.hasData) {
           return const LoginPage();
         }
 
         final user = authSnapshot.data!;
 
-        // 🔐 Logged in → check role
+        // 🔍 Fetch role from Firestore
         return FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
               .collection('users')
@@ -41,7 +41,7 @@ class RoleRouter extends StatelessWidget {
               );
             }
 
-            if (!userSnapshot.hasData || userSnapshot.data?.data() == null) {
+            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
               return const LoginPage();
             }
 
@@ -49,6 +49,7 @@ class RoleRouter extends StatelessWidget {
                 userSnapshot.data!.data() as Map<String, dynamic>;
             final role = data['role'] ?? 'user';
 
+            // 🔀 Route by role
             return role == 'admin'
                 ? const AdminDashboard()
                 : const AuctionHomePage();
