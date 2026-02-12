@@ -12,6 +12,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool obscurePassword = true;
+
 
   Future<void> loginUser() async {
   try {
@@ -31,6 +33,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+Future<void> resetPassword() async {
+  if (emailController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Enter your email first")),
+    );
+    return;
+  }
+
+  await FirebaseAuth.instance.sendPasswordResetEmail(
+    email: emailController.text.trim(),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Password reset email sent")),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +65,33 @@ class _LoginPageState extends State<LoginPage> {
               decoration: const InputDecoration(labelText: "Email"),
             ),
             TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: "Password"),
-            ),
+  controller: passwordController,
+  obscureText: obscurePassword,
+  decoration: InputDecoration(
+    labelText: "Password",
+    suffixIcon: IconButton(
+      icon: Icon(
+        obscurePassword ? Icons.visibility : Icons.visibility_off,
+      ),
+      onPressed: () {
+        setState(() {
+          obscurePassword = !obscurePassword;
+        });
+      },
+    ),
+  ),
+),
+
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: loginUser,
               child: const Text("Login"),
             ),
+            TextButton(
+  onPressed: resetPassword,
+  child: const Text("Forgot Password?"),
+),
+
             TextButton(
               onPressed: () {
                 Navigator.push(

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/image_upload_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 
 class CreateAuctionPage extends StatefulWidget {
   const CreateAuctionPage({super.key});
@@ -18,11 +19,27 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
   final commodityController = TextEditingController();
   final quantityController = TextEditingController();
   final basePriceController = TextEditingController();
+  final minOrderController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
   List<XFile> selectedImages = [];
 
+  Position? currentPosition;
   bool isLoading = false;
+
+  /// 📍 GET LIVE LOCATION
+  Future<void> getLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    currentPosition = await Geolocator.getCurrentPosition();
+    setState(() {});
+  }
 
   Future<void> pickImage(ImageSource source) async {
     final image = await _picker.pickImage(source: source, imageQuality: 70);
@@ -50,23 +67,39 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
       return;
     }
 
+    if (currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please share your location")),
+      );
+      return;
+    }
+
     setState(() => isLoading = true);
 
     final uid = FirebaseAuth.instance.currentUser!.uid;
-    final auctionRef = FirebaseFirestore.instance.collection('auctions').doc();
+    final auctionRef =
+        FirebaseFirestore.instance.collection('auctions').doc();
 
     final imageUrls = await uploadImages();
 
     await auctionRef.set({
       'commodityName': commodityController.text.trim(),
       'quantity': quantityController.text.trim(),
+      'minOrderQuantity': minOrderController.text.trim(),
       'basePrice': int.parse(basePriceController.text),
       'highestBid': int.parse(basePriceController.text),
       'sellerId': uid,
       'images': imageUrls,
+      'location': {
+        'lat': currentPosition!.latitude,
+        'lng': currentPosition!.longitude,
+      },
       'status': 'pending',
       'approved': false,
       'createdAt': FieldValue.serverTimestamp(),
+      'endTime': Timestamp.fromDate(
+        DateTime.now().add(const Duration(hours: 24)),
+      ),
     });
 
     setState(() => isLoading = false);
@@ -88,11 +121,13 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
           key: _formKey,
           child: ListView(
             children: [
+
               TextFormField(
                 controller: commodityController,
                 decoration: const InputDecoration(labelText: "Commodity Name"),
                 validator: (v) => v!.isEmpty ? "Required" : null,
               ),
+
               const SizedBox(height: 10),
 
               TextFormField(
@@ -100,6 +135,15 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
                 decoration: const InputDecoration(labelText: "Quantity"),
                 validator: (v) => v!.isEmpty ? "Required" : null,
               ),
+
+              const SizedBox(height: 10),
+
+              TextFormField(
+                controller: minOrderController,
+                decoration: const InputDecoration(
+                    labelText: "Minimum Order Quantity"),
+              ),
+
               const SizedBox(height: 10),
 
               TextFormField(
@@ -111,32 +155,31 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
 
               const SizedBox(height: 15),
 
-              /// ✅ WEB SAFE IMAGE PREVIEW
-             Wrap(
-  spacing: 10,
-  children: selectedImages.map((img) {
-    return FutureBuilder<Uint8List>(
-      future: img.readAsBytes(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SizedBox(
-            width: 80,
-            height: 80,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
+              /// 🖼 IMAGE PREVIEW
+              Wrap(
+                spacing: 10,
+                children: selectedImages.map((img) {
+                  return FutureBuilder<Uint8List>(
+                    future: img.readAsBytes(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-        return Image.memory(
-          snapshot.data!,
-          width: 80,
-          height: 80,
-          fit: BoxFit.cover,
-        );
-      },
-    );
-  }).toList(),
-),
-
+                      return Image.memory(
+                        snapshot.data!,
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
 
               const SizedBox(height: 10),
 
@@ -154,6 +197,18 @@ class _CreateAuctionPageState extends State<CreateAuctionPage> {
                     onPressed: () => pickImage(ImageSource.gallery),
                   ),
                 ],
+              ),
+
+              const SizedBox(height: 15),
+
+              ElevatedButton.icon(
+                icon: const Icon(Icons.location_on),
+                label: Text(
+                  currentPosition == null
+                      ? "Share My Location"
+                      : "Location Added ✓",
+                ),
+                onPressed: getLocation,
               ),
 
               const SizedBox(height: 25),

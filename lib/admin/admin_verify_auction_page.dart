@@ -106,14 +106,30 @@ SizedBox(
     children: images.map<Widget>((url) {
       return Padding(
         padding: const EdgeInsets.only(right: 10),
-        child: Image.network(
-          url,
-          width: 120,
-          height: 120,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) =>
-              const Icon(Icons.broken_image),
+        child: GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          body: Center(
+            child: InteractiveViewer(
+              child: Image.network(url),
+            ),
+          ),
         ),
+      ),
+    );
+  },
+  child: Image.network(
+    url,
+    width: 120,
+    height: 120,
+    fit: BoxFit.cover,
+  ),
+),
+
       );
     }).toList(),
   ),
