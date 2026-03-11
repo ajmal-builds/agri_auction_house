@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class FullScreenImagePage extends StatelessWidget {
   final String imageUrl;
@@ -13,7 +14,7 @@ class FullScreenImagePage extends StatelessWidget {
         onTap: () => Navigator.pop(context),
         child: Center(
           child: InteractiveViewer(
-            child: Image.network(imageUrl),
+            child: Image.file(File(imageUrl)),
           ),
         ),
       ),

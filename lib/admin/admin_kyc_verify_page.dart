@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/notification_service.dart';
+import 'dart:io';
 
 class AdminKycVerifyPage extends StatelessWidget {
   final String userId;
@@ -109,13 +110,13 @@ class AdminKycVerifyPage extends StatelessWidget {
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
+                  child: Image.file(File(
                     idProofUrl,
                     height: 200,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) =>
                         const Text("Failed to load image"),
-                  ),
+                  )),
                 ),
               )
             else

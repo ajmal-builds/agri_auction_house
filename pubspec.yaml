@@ -16,13 +16,20 @@ dependencies:
   firebase_auth: ^4.16.0
   cloud_firestore: ^4.17.5
   firebase_storage: ^11.6.5
+  firebase_messaging: ^14.7.10
 
-  # Image & upload
-  image_picker: ^1.0.7
-  http: ^1.2.0
+  # Location & Maps
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.6.1
 
   # UI
   cupertino_icons: ^1.0.6
+  carousel_slider: ^5.0.0
+  shimmer: ^3.0.0
+
+  # Image & network
+  image_picker: ^1.0.7
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -34,10 +41,3 @@ flutter:
 
   assets:
     - assets/images/spices_bg.jpg
-
-geolocator: ^10.1.0
-google_maps_flutter: ^2.5.0
-carousel_slider: ^4.2.1
-shimmer: ^3.0.0
-
-firebase_messaging: ^14.7.10

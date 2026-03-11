@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/kyc_service.dart';
 import '../services/image_upload_service.dart';
+import 'dart:io';
 
 class KycPage extends StatefulWidget {
   const KycPage({super.key});
@@ -115,11 +116,11 @@ class _KycPageState extends State<KycPage> {
 
               /// 🖼️ ID PROOF PREVIEW
               if (selectedIdImage != null)
-                Image.network(
+                Image.file(File(
                   selectedIdImage!.path,
                   height: 150,
                   fit: BoxFit.cover,
-                ),
+                )),
 
               const SizedBox(height: 10),
 

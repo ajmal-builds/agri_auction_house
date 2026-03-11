@@ -5,7 +5,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 import 'create_auction.dart';
 import 'bid_page.dart';
-import 'auction_history.dart';
 import 'user_profile.dart';
 import '../widgets/auction_timer.dart';
 import 'user_notifications.dart';
